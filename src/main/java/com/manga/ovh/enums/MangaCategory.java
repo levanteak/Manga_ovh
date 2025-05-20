@@ -1,4 +1,5 @@
 package com.manga.ovh.enums;
 
-public class MangaCategory {
+public enum MangaCategory {
+    MANGA, MANHWA, MANHUA, WEBTOON, DOUJINSHI
 }

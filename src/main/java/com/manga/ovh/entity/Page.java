@@ -2,20 +2,23 @@ package com.manga.ovh.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.util.UUID;
 
 @Entity
-@Table(name = "genres")
+@Table(name = "pages")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Genre {
+public class Page {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(unique = true, nullable = false)
-    private String name;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "chapter_id")
+    private Chapter chapter;
+
+    private Integer pageNumber;
+    private String imageUrl;
 }

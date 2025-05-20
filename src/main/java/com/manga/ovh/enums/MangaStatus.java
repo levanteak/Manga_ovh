@@ -1,4 +1,8 @@
 package com.manga.ovh.enums;
 
-public class MangaStatus {
+public enum MangaStatus {
+    ONGOING,
+    COMPLETED,
+    HIATUS,
+    DROPPED
 }

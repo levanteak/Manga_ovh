@@ -1,4 +1,5 @@
 package com.manga.ovh.enums;
 
-public class Role {
+public enum Role {
+    USER, ADMIN, PUBLISHER
 }
