@@ -22,13 +22,14 @@ public class PageController {
     @PostMapping("/{chapterId}")
     public ResponseEntity<ApiResponse<List<PageResponse>>> upload(
             @PathVariable UUID chapterId,
-            @RequestPart("images") List<MultipartFile> images
+            @RequestParam("images") List<MultipartFile> images
     ) {
         List<PageResponse> uploaded = pageService.uploadPages(chapterId, images);
         return ResponseEntity.ok(
                 new ApiResponse<>(200, "Страницы успешно загружены", uploaded)
         );
     }
+
 
     @GetMapping("/{chapterId}")
     public ResponseEntity<ApiResponse<List<PageResponse>>> get(@PathVariable UUID chapterId) {

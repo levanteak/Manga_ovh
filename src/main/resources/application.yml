@@ -3,10 +3,13 @@ server:
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5433/manga_ovh
-    username: postgres
-    password: postgres
+    url: "jdbc:postgresql://postgres:5432/manga_ovh"
+    username: "postgres"
+    password: "postgres"
     driver-class-name: org.postgresql.Driver
+  servlet:
+    multipart:
+      enabled: true
 
   jpa:
     hibernate:
@@ -19,10 +22,13 @@ spring:
 
   data:
     redis:
-      host: localhost
+      host: redis
       port: 6379
     elasticsearch:
-      cluster-nodes: "localhost:9200"
+      uris: "http://elasticsearch:9200"
+
+  cache:
+    type: redis
 
 aws:
   s3:
@@ -44,5 +50,4 @@ springdoc:
 logging:
   level:
     org.springframework.web: DEBUG
-    org.hibernate.SQL: DEBUG
-    org.hibernate.type.descriptor.sql: TRACE
+#    org.hibernate.type.descriptor.sql: TRACE

@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import org.springframework.cache.annotation.Cacheable;
 
 @Service
 @RequiredArgsConstructor
@@ -45,7 +46,6 @@ public class PageService {
                 .map(p -> new PageResponse(p.getPageNumber(), p.getImageUrl()))
                 .toList();
     }
-
     public List<PageResponse> getPages(UUID chapterId) {
         return pageRepository.findByChapterId(chapterId).stream()
                 .map(page -> new PageResponse(page.getPageNumber(), page.getImageUrl()))

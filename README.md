@@ -1,4 +1,12 @@
-# For run Docker : 
+# For run Docker :
+
+# 1. Пересобери .jar
 ```
-docker-compose up -d
-``` 
+./mvnw clean package -DskipTests
+```
+
+# 2. Перезапусти контейнер
+```
+docker compose down
+docker compose up --build
+```

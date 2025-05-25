@@ -4,6 +4,7 @@ import com.manga.ovh.dto.ApiResponse;
 import com.manga.ovh.entity.Chapter;
 import com.manga.ovh.service.ChapterService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

@@ -2,7 +2,6 @@ package com.manga.ovh.service;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -37,6 +36,9 @@ public class MangaCacheService {
 
     @PostConstruct
     public void init() {
-        testRedis();  // будет вызван при старте приложения
+        try {
+            Thread.sleep(3000); // задержка, чтобы Redis точно успел запуститься
+        } catch (InterruptedException ignored) {}
+        testRedis();
     }
 }

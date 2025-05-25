@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.UUID;
 
@@ -55,4 +56,5 @@ public class S3Service {
             throw new RuntimeException("Ошибка при загрузке файла в S3: " + e.getMessage(), e);
         }
     }
+
 }
