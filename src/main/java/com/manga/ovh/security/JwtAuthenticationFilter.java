@@ -34,15 +34,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 String username = jwtProvider.getUsernameFromToken(token);
 
                 // 💡 Теперь кладём только username, не весь объект User
+                String role = userRepo.findByUsername(username)
+                        .map(user -> "ROLE_" + user.getRole().name())
+                        .orElse("ROLE_USER");
+
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(
                                 username,
                                 null,
-                                List.of(new SimpleGrantedAuthority(
-                                        userRepo.findByUsername(username)
-                                                .map(user -> user.getRole().name())
-                                                .orElse("USER") // запасной вариант
-                                ))
+                                List.of(new SimpleGrantedAuthority(role))
                         );
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);

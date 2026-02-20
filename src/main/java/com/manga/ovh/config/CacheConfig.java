@@ -21,14 +21,15 @@ public class CacheConfig {
 
     @Bean
     public RedisCacheConfiguration redisCacheConfiguration() {
-        Jackson2JsonRedisSerializer<MangaDto> serializer = new Jackson2JsonRedisSerializer<>(MangaDto.class);
         ObjectMapper mapper = new ObjectMapper();
         mapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
         mapper.activateDefaultTyping(
                 BasicPolymorphicTypeValidator.builder().allowIfBaseType(Object.class).build(),
                 ObjectMapper.DefaultTyping.NON_FINAL
         );
-        serializer.setObjectMapper(mapper);
+
+        Jackson2JsonRedisSerializer<MangaDto> serializer =
+                new Jackson2JsonRedisSerializer<>(mapper, MangaDto.class);
 
         return RedisCacheConfiguration.defaultCacheConfig()
                 .entryTtl(Duration.ofMinutes(15))

@@ -3,7 +3,7 @@ server:
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5433/manga_ovh
+    url: jdbc:postgresql://postgres:5432/manga_ovh
     username: postgres
     password: postgres
     driver-class-name: org.postgresql.Driver
@@ -19,10 +19,10 @@ spring:
 
   data:
     redis:
-      host: localhost
+      host: redis
       port: 6379
     elasticsearch:
-      cluster-nodes: "localhost:9200"
+      uris: "http://elasticsearch:9200"
 
 aws:
   s3:

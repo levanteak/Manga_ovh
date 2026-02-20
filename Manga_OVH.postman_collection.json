@@ -1,0 +1,757 @@
+{
+  "info": {
+    "name": "Manga OVH API",
+    "_postman_id": "manga-ovh-api-collection",
+    "description": "Полная коллекция запросов для Manga OVH Backend (Spring Boot). Базовый URL: {{base_url}} = http://localhost:8080. После логина скопируйте token в переменную {{token}}.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "manga_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "chapter_id",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register (USER)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"testuser\",\n  \"email\": \"testuser@example.com\",\n  \"password\": \"password123\",\n  \"role\": \"USER\",\n  \"age\": 20\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "register"]
+            },
+            "description": "Регистрация обычного пользователя. Role: USER, ADMIN, PUBLISHER"
+          }
+        },
+        {
+          "name": "Register (PUBLISHER)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"publisher_user\",\n  \"email\": \"publisher@example.com\",\n  \"password\": \"password123\",\n  \"role\": \"PUBLISHER\",\n  \"age\": 30,\n  \"publisherName\": \"Shueisha\",\n  \"publisherCountry\": \"Japan\",\n  \"publisherWebsite\": \"https://shueisha.co.jp\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "register"]
+            },
+            "description": "Регистрация издателя. Обязательно: publisherName, publisherCountry, publisherWebsite"
+          }
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var json = pm.response.json();",
+                  "if (json.data && json.data.token) {",
+                  "    pm.collectionVariables.set('token', json.data.token);",
+                  "    console.log('Token saved:', json.data.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"testuser\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "login"]
+            },
+            "description": "Вход в систему. Token автоматически сохраняется в переменную {{token}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Manga",
+      "item": [
+        {
+          "name": "Create Manga",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "cover", "type": "file", "src": "", "description": "Файл обложки (jpg/png)" },
+                { "key": "title", "value": "Naruto", "type": "text" },
+                { "key": "originalTitle", "value": "ナルト", "type": "text" },
+                { "key": "description", "value": "История о молодом ниндзя Наруто Узумаки", "type": "text" },
+                { "key": "status", "value": "COMPLETED", "type": "text", "description": "ONGOING | COMPLETED | HIATUS | DROPPED" },
+                { "key": "category", "value": "MANGA", "type": "text", "description": "MANGA | MANHWA | MANHUA | WEBTOON | DOUJINSHI" },
+                { "key": "releaseYear", "value": "1999", "type": "text" },
+                { "key": "country", "value": "Japan", "type": "text" },
+                { "key": "author", "value": "Masashi Kishimoto", "type": "text" },
+                { "key": "artist", "value": "Masashi Kishimoto", "type": "text" },
+                { "key": "publisherName", "value": "Shueisha", "type": "text" },
+                { "key": "genres", "value": "Action", "type": "text" },
+                { "key": "genres", "value": "Adventure", "type": "text" },
+                { "key": "genres", "value": "Shounen", "type": "text" },
+                { "key": "tags", "value": "ninja", "type": "text" },
+                { "key": "tags", "value": "school", "type": "text" }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/api/manga",
+              "host": ["{{base_url}}"],
+              "path": ["api", "manga"]
+            },
+            "description": "Создание манги. Multipart/form-data. Genres и tags можно передавать несколько раз."
+          }
+        },
+        {
+          "name": "Get All Manga (with filters)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/manga?status=ONGOING&category=MANGA&genre=Action&tag=ninja&country=Japan&releaseYear=1999&sortBy=averageRating&sortDir=DESC&page=0&size=20",
+              "host": ["{{base_url}}"],
+              "path": ["api", "manga"],
+              "query": [
+                { "key": "status", "value": "ONGOING", "description": "ONGOING | COMPLETED | HIATUS | DROPPED", "disabled": true },
+                { "key": "category", "value": "MANGA", "description": "MANGA | MANHWA | MANHUA | WEBTOON | DOUJINSHI", "disabled": true },
+                { "key": "genre", "value": "Action", "disabled": true },
+                { "key": "tag", "value": "ninja", "disabled": true },
+                { "key": "country", "value": "Japan", "disabled": true },
+                { "key": "releaseYear", "value": "1999", "disabled": true },
+                { "key": "sortBy", "value": "averageRating", "description": "createdAt | views | averageRating | title" },
+                { "key": "sortDir", "value": "DESC", "description": "ASC | DESC" },
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "20" }
+              ]
+            },
+            "description": "Список манг с пагинацией и фильтрацией. Все параметры опциональны. Отключённые параметры включите по необходимости."
+          }
+        },
+        {
+          "name": "Get Manga by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/manga/{{manga_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "manga", "{{manga_id}}"]
+            },
+            "description": "Получить мангу по UUID. Результат кешируется в Redis."
+          }
+        },
+        {
+          "name": "Update Manga (ADMIN)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "title", "value": "Naruto (Updated)", "type": "text" },
+                { "key": "originalTitle", "value": "ナルト", "type": "text" },
+                { "key": "description", "value": "Обновлённое описание", "type": "text" },
+                { "key": "status", "value": "COMPLETED", "type": "text" },
+                { "key": "category", "value": "MANGA", "type": "text" },
+                { "key": "releaseYear", "value": "1999", "type": "text" },
+                { "key": "country", "value": "Japan", "type": "text" },
+                { "key": "author", "value": "Masashi Kishimoto", "type": "text" },
+                { "key": "artist", "value": "Masashi Kishimoto", "type": "text" },
+                { "key": "publisherName", "value": "Shueisha", "type": "text" },
+                { "key": "genres", "value": "Action", "type": "text" },
+                { "key": "genres", "value": "Shounen", "type": "text" },
+                { "key": "tags", "value": "ninja", "type": "text" },
+                { "key": "cover", "type": "file", "src": "", "disabled": true, "description": "Опционально: новая обложка" }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/api/manga/{{manga_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "manga", "{{manga_id}}"]
+            },
+            "description": "Обновление манги. Только для роли ADMIN."
+          }
+        },
+        {
+          "name": "Delete Manga (ADMIN)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/manga/{{manga_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "manga", "{{manga_id}}"]
+            },
+            "description": "Удаление манги. Только для роли ADMIN."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Chapters",
+      "item": [
+        {
+          "name": "Create Chapter",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"number\": 1,\n  \"title\": \"Узумаки Наруто!!\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/chapters/{{manga_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "chapters", "{{manga_id}}"]
+            },
+            "description": "Создать главу для манги. releaseDate устанавливается автоматически."
+          }
+        },
+        {
+          "name": "Get Chapters by Manga",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/chapters/{{manga_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "chapters", "{{manga_id}}"]
+            },
+            "description": "Получить все главы манги по её ID."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Pages",
+      "item": [
+        {
+          "name": "Upload Pages",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "images", "type": "file", "src": "", "description": "Страница 1" },
+                { "key": "images", "type": "file", "src": "", "description": "Страница 2" },
+                { "key": "images", "type": "file", "src": "", "description": "Страница 3" }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/api/pages/{{chapter_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "pages", "{{chapter_id}}"]
+            },
+            "description": "Загрузка страниц главы в S3. Передавайте несколько files с ключом images."
+          }
+        },
+        {
+          "name": "Get Pages by Chapter",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/pages/{{chapter_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "pages", "{{chapter_id}}"]
+            },
+            "description": "Получить все страницы главы (pageNumber + imageUrl)."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Comments",
+      "item": [
+        {
+          "name": "Add Comment",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"Отличная манга, очень нравится!\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/comments/{{manga_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "comments", "{{manga_id}}"]
+            },
+            "description": "Добавить комментарий к манге."
+          }
+        },
+        {
+          "name": "Get Comments",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/comments/{{manga_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "comments", "{{manga_id}}"]
+            },
+            "description": "Получить все комментарии к манге."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Likes",
+      "item": [
+        {
+          "name": "Like Manga",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/likes/{{manga_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "likes", "{{manga_id}}"]
+            },
+            "description": "Поставить лайк манге (один раз на пользователя)."
+          }
+        },
+        {
+          "name": "Get Like Count",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/likes/{{manga_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "likes", "{{manga_id}}"]
+            },
+            "description": "Получить количество лайков манги."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Ratings",
+      "item": [
+        {
+          "name": "Rate Manga",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"score\": 9\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/ratings/{{manga_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "ratings", "{{manga_id}}"]
+            },
+            "description": "Поставить оценку 1-10. Если уже ставил — обновляет. Автоматически пересчитывает averageRating манги."
+          }
+        },
+        {
+          "name": "Get Rating",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/ratings/{{manga_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "ratings", "{{manga_id}}"]
+            },
+            "description": "Получить средний рейтинг, количество оценок и оценку текущего пользователя."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reading History",
+      "item": [
+        {
+          "name": "Save Progress",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"mangaId\": \"{{manga_id}}\",\n  \"chapterId\": \"{{chapter_id}}\",\n  \"lastPage\": 12\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/history",
+              "host": ["{{base_url}}"],
+              "path": ["api", "history"]
+            },
+            "description": "Сохранить или обновить прогресс чтения (один record на manga+user)."
+          }
+        },
+        {
+          "name": "Get My History",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/history",
+              "host": ["{{base_url}}"],
+              "path": ["api", "history"]
+            },
+            "description": "Получить историю чтения текущего пользователя (отсортировано по дате, новые сначала)."
+          }
+        },
+        {
+          "name": "Delete Progress",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/history/{{manga_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "history", "{{manga_id}}"]
+            },
+            "description": "Удалить запись истории чтения по manga ID."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Bookmarks",
+      "item": [
+        {
+          "name": "Add / Update Bookmark",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"READING\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/bookmarks/{{manga_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "bookmarks", "{{manga_id}}"]
+            },
+            "description": "Добавить/изменить закладку. status: READING | COMPLETED | PLANNED | DROPPED"
+          }
+        },
+        {
+          "name": "Get All Bookmarks",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/bookmarks",
+              "host": ["{{base_url}}"],
+              "path": ["api", "bookmarks"]
+            },
+            "description": "Получить все закладки пользователя."
+          }
+        },
+        {
+          "name": "Get Bookmarks by Status",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/bookmarks?status=READING",
+              "host": ["{{base_url}}"],
+              "path": ["api", "bookmarks"],
+              "query": [
+                { "key": "status", "value": "READING", "description": "READING | COMPLETED | PLANNED | DROPPED" }
+              ]
+            },
+            "description": "Получить закладки с фильтром по статусу."
+          }
+        },
+        {
+          "name": "Remove Bookmark",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/bookmarks/{{manga_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "bookmarks", "{{manga_id}}"]
+            },
+            "description": "Удалить закладку."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tags",
+      "item": [
+        {
+          "name": "Create Tag (ADMIN)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/tags?name=ninja",
+              "host": ["{{base_url}}"],
+              "path": ["api", "tags"],
+              "query": [
+                { "key": "name", "value": "ninja" }
+              ]
+            },
+            "description": "Создать тег. Только для роли ADMIN."
+          }
+        },
+        {
+          "name": "Get All Tags",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/tags",
+              "host": ["{{base_url}}"],
+              "path": ["api", "tags"]
+            },
+            "description": "Получить все теги."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Search (Elasticsearch)",
+      "item": [
+        {
+          "name": "Index Manga Document",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"{{manga_id}}\",\n  \"title\": \"Naruto\",\n  \"description\": \"История о ниндзя\",\n  \"genres\": [\"Action\", \"Shounen\"]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/search/add",
+              "host": ["{{base_url}}"],
+              "path": ["api", "search", "add"]
+            },
+            "description": "Добавить мангу в индекс Elasticsearch для поиска."
+          }
+        },
+        {
+          "name": "Search Manga",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/search?keyword=naruto",
+              "host": ["{{base_url}}"],
+              "path": ["api", "search"],
+              "query": [
+                { "key": "keyword", "value": "naruto" }
+              ]
+            },
+            "description": "Поиск манги по ключевому слову через Elasticsearch."
+          }
+        }
+      ]
+    },
+    {
+      "name": "User",
+      "item": [
+        {
+          "name": "Get My Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/user/me",
+              "host": ["{{base_url}}"],
+              "path": ["api", "user", "me"]
+            },
+            "description": "Получить данные текущего пользователя."
+          }
+        },
+        {
+          "name": "Upload Avatar",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "file", "type": "file", "src": "", "description": "Файл аватара (jpg/png)" }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/api/user/avatar",
+              "host": ["{{base_url}}"],
+              "path": ["api", "user", "avatar"]
+            },
+            "description": "Загрузить аватар пользователя в S3."
+          }
+        },
+        {
+          "name": "Edit Profile",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"newemail@example.com\",\n  \"password\": \"newpassword123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/user/edit",
+              "host": ["{{base_url}}"],
+              "path": ["api", "user", "edit"]
+            },
+            "description": "Обновить email и/или пароль текущего пользователя."
+          }
+        },
+        {
+          "name": "Delete My Account",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/user/delete",
+              "host": ["{{base_url}}"],
+              "path": ["api", "user", "delete"]
+            },
+            "description": "Удалить собственный аккаунт."
+          }
+        },
+        {
+          "name": "Delete User (ADMIN)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/user/admin/delete?username=targetuser",
+              "host": ["{{base_url}}"],
+              "path": ["api", "user", "admin", "delete"],
+              "query": [
+                { "key": "username", "value": "targetuser" }
+              ]
+            },
+            "description": "Удалить любого пользователя по username. Только для роли ADMIN."
+          }
+        },
+        {
+          "name": "Get All Users (ADMIN)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/user/all",
+              "host": ["{{base_url}}"],
+              "path": ["api", "user", "all"]
+            },
+            "description": "Получить список всех пользователей. Только для роли ADMIN."
+          }
+        }
+      ]
+    }
+  ]
+}

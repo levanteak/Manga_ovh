@@ -3,16 +3,19 @@ package com.manga.ovh.controller;
 import com.manga.ovh.dto.ApiResponse;
 import com.manga.ovh.dto.MangaCreateRequest;
 import com.manga.ovh.dto.MangaDto;
+import com.manga.ovh.dto.MangaFilter;
 import com.manga.ovh.entity.Manga;
+import com.manga.ovh.enums.MangaCategory;
+import com.manga.ovh.enums.MangaStatus;
 import com.manga.ovh.service.MangaService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
+
 @RestController
 @RequestMapping("/api/manga")
 @RequiredArgsConstructor
@@ -23,9 +26,7 @@ public class MangaController {
     @PostMapping
     public ResponseEntity<ApiResponse<UUID>> create(@ModelAttribute MangaCreateRequest request) {
         Manga saved = mangaService.create(request);
-        return ResponseEntity.ok(
-                new ApiResponse<>(200, "Манга успешно добавлена", saved.getId())
-        );
+        return ResponseEntity.ok(new ApiResponse<>(200, "Манга успешно добавлена", saved.getId()));
     }
 
     @GetMapping("/{id}")
@@ -34,10 +35,32 @@ public class MangaController {
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<MangaDto>>> getAll() {
-        return ResponseEntity.ok(
-                new ApiResponse<>(200, "Список манг", mangaService.getAll())
-        );
+    public ResponseEntity<ApiResponse<Page<MangaDto>>> getAll(
+            @RequestParam(required = false) MangaStatus status,
+            @RequestParam(required = false) MangaCategory category,
+            @RequestParam(required = false) String genre,
+            @RequestParam(required = false) String tag,
+            @RequestParam(required = false) String country,
+            @RequestParam(required = false) Integer releaseYear,
+            @RequestParam(defaultValue = "createdAt") String sortBy,
+            @RequestParam(defaultValue = "DESC") String sortDir,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
+    ) {
+        MangaFilter filter = new MangaFilter();
+        filter.setStatus(status);
+        filter.setCategory(category);
+        filter.setGenre(genre);
+        filter.setTag(tag);
+        filter.setCountry(country);
+        filter.setReleaseYear(releaseYear);
+        filter.setSortBy(sortBy);
+        filter.setSortDir(sortDir);
+        filter.setPage(page);
+        filter.setSize(size);
+
+        Page<MangaDto> result = mangaService.getFiltered(filter);
+        return ResponseEntity.ok(new ApiResponse<>(200, "Список манг", result));
     }
 
     @PutMapping("/{id}")
@@ -46,9 +69,7 @@ public class MangaController {
             @PathVariable UUID id,
             @ModelAttribute MangaCreateRequest request
     ) {
-        return ResponseEntity.ok(
-                new ApiResponse<>(200, "Манга обновлена", mangaService.update(id, request))
-        );
+        return ResponseEntity.ok(new ApiResponse<>(200, "Манга обновлена", mangaService.update(id, request)));
     }
 
     @DeleteMapping("/{id}")

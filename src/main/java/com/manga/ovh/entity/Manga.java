@@ -52,7 +52,24 @@ public class Manga {
             joinColumns = @JoinColumn(name = "manga_id"),
             inverseJoinColumns = @JoinColumn(name = "genre_id")
     )
+    @Builder.Default
     private Set<Genre> genres = new HashSet<>();
+
+    @ManyToMany
+    @JoinTable(
+            name = "manga_tags",
+            joinColumns = @JoinColumn(name = "manga_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id")
+    )
+    @Builder.Default
+    private Set<Tag> tags = new HashSet<>();
+
+    @Column(name = "average_rating")
+    private Double averageRating;
+
+    @Column(name = "rating_count")
+    @Builder.Default
+    private Long ratingCount = 0L;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

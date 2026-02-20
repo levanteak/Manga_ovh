@@ -48,4 +48,6 @@ public class MangaCreateRequest {
 
     @NotNull(message = "Genres are required")
     private List<String> genres;
+
+    private List<String> tags;
 }

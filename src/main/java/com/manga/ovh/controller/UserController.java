@@ -61,14 +61,14 @@ public class UserController {
     }
 
     @PostMapping("/admin/delete")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<Void>> deleteAny(@RequestParam String username) {
         userService.deleteByUsername(username);
         return ResponseEntity.ok(new ApiResponse<>(200, "Аккаунт удалён админом", null));
     }
 
     @GetMapping("/all")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<List<User>>> getAllUsers() {
         List<User> users = userService.getAll();
         return ResponseEntity.ok(new ApiResponse<>(200, "Список пользователей", users));
