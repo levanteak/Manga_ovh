@@ -34,6 +34,12 @@ public class User {
 
     private Integer age;
 
+    @Column(name = "oauth_provider")
+    private String oauthProvider;
+
+    @Column(name = "oauth_id")
+    private String oauthId;
+
     private LocalDateTime createdAt;
 
     @ManyToOne

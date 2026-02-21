@@ -1,9 +1,7 @@
 package com.manga.ovh.repository;
 
 import com.manga.ovh.dto.MangaFilter;
-import com.manga.ovh.entity.Genre;
-import com.manga.ovh.entity.Manga;
-import com.manga.ovh.entity.Tag;
+import com.manga.ovh.entity.*;
 import jakarta.persistence.criteria.*;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -40,6 +38,21 @@ public class MangaSpecification {
             if (filter.getTag() != null && !filter.getTag().isBlank()) {
                 Join<Manga, Tag> tagJoin = root.join("tags", JoinType.INNER);
                 predicates.add(cb.equal(cb.lower(tagJoin.get("name")), filter.getTag().toLowerCase()));
+            }
+
+            if (filter.getPublisherName() != null && !filter.getPublisherName().isBlank()) {
+                Join<Manga, Publisher> publisherJoin = root.join("publisher", JoinType.INNER);
+                predicates.add(cb.equal(cb.lower(publisherJoin.get("name")), filter.getPublisherName().toLowerCase()));
+            }
+
+            if (filter.getUserId() != null) {
+                // User -> publisher_id -> Publisher; Manga -> publisher_id -> Publisher
+                // Subquery: find publisher_id for the given user
+                Subquery<java.util.UUID> subquery = query.subquery(java.util.UUID.class);
+                Root<User> userRoot = subquery.from(User.class);
+                subquery.select(userRoot.get("publisher").get("id"))
+                        .where(cb.equal(userRoot.get("id"), filter.getUserId()));
+                predicates.add(cb.equal(root.get("publisher").get("id"), subquery));
             }
 
             // distinct нужен из-за JOIN по genres/tags — иначе дублируются строки

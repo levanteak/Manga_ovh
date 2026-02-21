@@ -42,6 +42,8 @@ public class MangaController {
             @RequestParam(required = false) String tag,
             @RequestParam(required = false) String country,
             @RequestParam(required = false) Integer releaseYear,
+            @RequestParam(required = false) String publisherName,
+            @RequestParam(required = false) UUID userId,
             @RequestParam(defaultValue = "createdAt") String sortBy,
             @RequestParam(defaultValue = "DESC") String sortDir,
             @RequestParam(defaultValue = "0") int page,
@@ -54,6 +56,8 @@ public class MangaController {
         filter.setTag(tag);
         filter.setCountry(country);
         filter.setReleaseYear(releaseYear);
+        filter.setPublisherName(publisherName);
+        filter.setUserId(userId);
         filter.setSortBy(sortBy);
         filter.setSortDir(sortDir);
         filter.setPage(page);

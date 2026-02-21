@@ -17,6 +17,18 @@ spring:
         format_sql: true
     database-platform: org.hibernate.dialect.PostgreSQLDialect
 
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 683272009187-bcfpq3itvoejmmp5glpsu7f7v5rk4kni.apps.googleusercontent.com
+            client-secret: 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
+            scope:
+              - email
+              - profile
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+
   data:
     redis:
       host: redis
@@ -30,6 +42,12 @@ aws:
     secret-key: "DvB2u+sK89CyADGiOCIvLVnkq2QGAPxkVgfuj1xb"
     bucket-name: "levanteak"
     region: "eu-north-1"
+
+telegram:
+  bot-token: "6226041888:AAEmupT9lQqQImG8py6DOL7j1tvwOUXEQUI"
+
+oauth2:
+  frontend-redirect-url: ${OAUTH2_FRONTEND_REDIRECT:http://localhost:3000/oauth2/callback}
 
 jwt:
   secret: "JcDkzLp98AjXBv4tOwMNefKxRAZ1l3cYQtuVkWyjPEs2nqBHTgoUmavLC9hE7rFN"

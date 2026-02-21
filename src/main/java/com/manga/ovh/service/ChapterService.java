@@ -1,5 +1,6 @@
 package com.manga.ovh.service;
 
+import com.manga.ovh.dto.ChapterResponse;
 import com.manga.ovh.entity.Chapter;
 import com.manga.ovh.entity.Manga;
 import com.manga.ovh.repository.ChapterRepository;
@@ -10,7 +11,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
-import org.springframework.cache.annotation.Cacheable;
 
 @Service
 @RequiredArgsConstructor
@@ -19,14 +19,18 @@ public class ChapterService {
     private final ChapterRepository chapterRepository;
     private final MangaRepository mangaRepository;
 
-    public Chapter create(UUID mangaId, Chapter chapter) {
-        Manga manga = mangaRepository.findById(mangaId).orElseThrow();
+    public ChapterResponse create(UUID mangaId, Chapter chapter) {
+        Manga manga = mangaRepository.findById(mangaId)
+                .orElseThrow(() -> new RuntimeException("Манга с ID " + mangaId + " не найдена"));
         chapter.setManga(manga);
         chapter.setCreatedAt(LocalDateTime.now());
-        return chapterRepository.save(chapter);
+        Chapter saved = chapterRepository.save(chapter);
+        return ChapterResponse.from(saved);
     }
 
-    public List<Chapter> getAllByManga(UUID mangaId) {
-        return chapterRepository.findByMangaId(mangaId);
+    public List<ChapterResponse> getAllByManga(UUID mangaId) {
+        return chapterRepository.findByMangaId(mangaId).stream()
+                .map(ChapterResponse::from)
+                .toList();
     }
 }
